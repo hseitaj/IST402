@@ -1,5 +1,8 @@
 """
-    - Brandon Whitman-Orlin, IST 402, CBC and CBF Python Solution.
+    - IST 402, CBC and CBF Python Solution.
+    
+    - Please installl pycryptodome before running the application:
+      pip install pycryptodome
 
     - This program demonstrates how to use the AES algorithm 
       to encrypt text using two modes: CBC and CBF. 

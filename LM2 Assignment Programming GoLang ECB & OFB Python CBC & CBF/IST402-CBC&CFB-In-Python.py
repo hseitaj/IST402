@@ -13,19 +13,6 @@
     Inputs:
     - The user is prompted to enter plaintext when the program is run.
 
-    Limitations:
-    - The program only encrypts ASCII text. Non-ASCII characters 
-      will need to be converted to bytes before being encrypted.
-
-    - The program does not decrypt the ciphertext. It only 
-      demonstrates how to encrypt plaintext using AES.
-
-    - The program uses a fixed block size of 16 bytes, 
-      the plaintext input must be padded to a multiple 
-      of 16 bytes in order to be encrypted using CBC mode.
-
-    - The program does not handle errors related to 
-      incorrect input type or length.
 """
 
 

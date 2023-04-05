@@ -1,5 +1,5 @@
 package main
-
+// Another version of a client implementation
 import (
 	"bufio"
 	"crypto/tls"

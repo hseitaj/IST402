@@ -1,5 +1,8 @@
 package main
 
+// LM6 - ECC in GoLang
+// IST 402
+
 import (
 	"bufio"
 	"crypto/aes"

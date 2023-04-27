@@ -15,7 +15,7 @@ var rotor1 = []rune{'E', 'K', 'M', 'F', 'L', 'G', 'D', 'Q', 'V', 'Z', 'N', 'T', 
 var rotor2 = []rune{'D', 'J', 'A', 'K', 'S', 'I', 'R', 'U', 'X', 'B', 'L', 'H', 'W', 'T', 'M', 'C', 'Q', 'G', 'Z', 'N', 'P', 'Y', 'F', 'V', 'O', 'E'}
 var rotor3 = []rune{'B', 'D', 'F', 'H', 'J', 'L', 'C', 'P', 'R', 'T', 'X', 'V', 'Z', 'N', 'Y', 'E', 'I', 'W', 'G', 'A', 'K', 'M', 'U', 'S', 'Q', 'O'}
 
-var reflector = []rune{'T', 'L', 'I', 'H', 'W', 'E', 'K', 'N', 'A', 'Q', 'z', 'G', 'V', 'P', 'X', 'D', 'O', 'J', 'Y', 'U', 'F', 'S', 'R', 'C', 'M', 'B'}
+var reflector = []rune{'T', 'L', 'I', 'H', 'W', 'E', 'K', 'N', 'A', 'Q', 'Z', 'G', 'V', 'P', 'X', 'D', 'O', 'J', 'Y', 'U', 'F', 'S', 'R', 'C', 'M', 'B'}
 
 func main() {
 	// Prompt the User for an Input
@@ -34,8 +34,8 @@ func main() {
 	//fmt.Println(string(reflector))
 
 	// Encrypt the Input
-	encryptedStr := encrypt(input, 1, 1, 1)
-	decryptedStr := decrypt(encryptedStr, 1, 1, 1)
+	encryptedStr := encrypt(input, 26, 26, 26)
+	decryptedStr := decrypt(encryptedStr, 26, 26, 26)
 	print(decryptedStr)
 }
 
@@ -124,7 +124,7 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 	fmt.Println("Final Encryption:", string(chars))
 	fmt.Println("-------------------------")
 
-	for _ = range str {
+	for range str {
 		rotate(rotor1, 25)
 		rotate(rotor2, 25)
 		rotate(rotor3, 25)
@@ -165,14 +165,12 @@ func decrypt(str string, r1 int, r2 int, r3 int) string {
 		fmt.Println("Error: Rotor 3 Position must be a Positive Integer between 1-26.")
 	}
 
-	for _ = range str {
-		rotate(rotor1, 2)
-		rotate(rotor1, 2)
-		rotate(rotor2, 2)
-		rotate(rotor2, 2)
-		rotate(rotor3, 2)
-		rotate(rotor3, 2)
-	}
+	rotate(rotor1, r1+(len(str)*2)+1)
+	//fmt.Println(string(rotor1))
+	rotate(rotor2, r2+(len(str)*2)+1)
+	//fmt.Println(string(rotor2))
+	rotate(rotor3, r3+(len(str)*2)+1)
+	//fmt.Println(string(rotor3))
 
 	// Remove the Newline Character '\n' and the Return Character '\r' at the end of the String
 	output := ""

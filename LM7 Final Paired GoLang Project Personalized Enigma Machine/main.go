@@ -15,15 +15,25 @@ var rotor1 = []rune{'E', 'K', 'M', 'F', 'L', 'G', 'D', 'Q', 'V', 'Z', 'N', 'T', 
 var rotor2 = []rune{'D', 'J', 'A', 'K', 'S', 'I', 'R', 'U', 'X', 'B', 'L', 'H', 'W', 'T', 'M', 'C', 'Q', 'G', 'Z', 'N', 'P', 'Y', 'F', 'V', 'O', 'E'}
 var rotor3 = []rune{'B', 'D', 'F', 'H', 'J', 'L', 'C', 'P', 'R', 'T', 'X', 'V', 'Z', 'N', 'Y', 'E', 'I', 'W', 'G', 'A', 'K', 'M', 'U', 'S', 'Q', 'O'}
 
+// Create the Reflector with a Static random Alphabet
 var reflector = []rune{'T', 'L', 'I', 'H', 'W', 'E', 'K', 'N', 'A', 'Q', 'Z', 'G', 'V', 'P', 'X', 'D', 'O', 'J', 'Y', 'U', 'F', 'S', 'R', 'C', 'M', 'B'}
 
+// Variable to control Printing of Output
+var verbose string
+
+// Main Function
 func main() {
 	// Prompt the User for an Input
-	fmt.Println("Enter a string:")
+	fmt.Println("-------------------------")
+	fmt.Println("Enter a String to Encrypt (Do not include any Numbers in the String):")
 	inputReader := bufio.NewReader(os.Stdin)
 	input, _ := inputReader.ReadString('\n')
 	// Convert the Input to uppercase
 	input = strings.ToUpper(input)
+
+	fmt.Println("-------------------------")
+	fmt.Println("Would you like a Detailed Output of the Encryption/Decryption process? (Y/N):")
+	fmt.Scanln(&verbose)
 
 	// Print the current Rotor positions
 	//fmt.Println(string(rotor1))
@@ -32,13 +42,40 @@ func main() {
 
 	// Print the Reflector position
 	//fmt.Println(string(reflector))
+	
+	// Prompt the User for the 3 Encryption Keys
+	fmt.Println("-------------------------")
+	var encryptionKey1 int
+	var encryptionKey2 int
+	var encryptionKey3 int
+	fmt.Println("Please enter the First Key you wish to use for Encryption (1-26):")
+	fmt.Scanln(&encryptionKey1)
+	fmt.Println("Please enter the Second Key you wish to use for Encryption (1-26):")
+	fmt.Scanln(&encryptionKey2)
+	fmt.Println("Please enter the Third Key you wish to use for Encryption (1-26):")
+	fmt.Scanln(&encryptionKey3)
 
 	// Encrypt the Input
-	encryptedStr := encrypt(input, 26, 26, 26)
-	decryptedStr := decrypt(encryptedStr, 26, 26, 26)
-	print(decryptedStr)
+	encryptedStr := encrypt(input, encryptionKey1, encryptionKey2, encryptionKey3)
+
+	// Prompt the User for the 3 Decryption Keys
+	fmt.Println("-------------------------")
+	var decryptionKey1 int
+	var decryptionKey2 int
+	var decryptionKey3 int
+	fmt.Println("Please enter the First Key you wish to use for Decryption (1-26):")
+	fmt.Scanln(&decryptionKey1)
+	fmt.Println("Please enter the Second Key you wish to use for Decryption (1-26):")
+	fmt.Scanln(&decryptionKey2)
+	fmt.Println("Please enter the Third Key you wish to use for Decryption (1-26):")
+	fmt.Scanln(&decryptionKey3)
+
+	// Decrypt the String
+	decrypt(encryptedStr, decryptionKey1, decryptionKey2, decryptionKey3)
+	fmt.Println("-------------------------")
 }
 
+// Encryption Function
 func encrypt(str string, r1 int, r2 int, r3 int) string {
 	// Check if str length is greater than 0
 	if len(str) < 1 {
@@ -56,6 +93,7 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 		fmt.Println("Error: Rotor 3 Position must be a Positive Integer between 1-26.")
 	}
 
+	// Rotate the Rotors to the specified Positions
 	rotate(rotor1, r1)
 	//fmt.Println(string(rotor1))
 	rotate(rotor2, r2)
@@ -82,37 +120,53 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 
 	// Print the Original Mapping
 	fmt.Println("-------------------------")
-	fmt.Println("Before Encryption:", string(chars))
+	fmt.Println("String Before Encryption:", string(chars))
 
 	// Encrypt the String one Character at a time
 	for i := 0; i < len(chars); i++ {
 		if chars[i] >= 65 && chars[i] <= 90 {
-			fmt.Println("-------------------------")
+			if verbose == "Y" {
+				fmt.Println("-------------------------")
+			}
 			// Map the Letter using Rotor 1
-			fmt.Println("Rotor 1   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor1[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Rotor 1   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor1[chars[i]-'A']))
+			}
 			chars[i] = rotor1[chars[i]-'A']
 			rotate(rotor1, 2)
 			// Map the Letter using Rotor 2
-			fmt.Println("Rotor 2   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor2[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Rotor 2   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor2[chars[i]-'A']))
+			}
 			chars[i] = rotor2[chars[i]-'A']
 			rotate(rotor2, 2)
 			// Map the Letter using Rotor 3
-			fmt.Println("Rotor 3   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor3[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Rotor 3   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor3[chars[i]-'A']))
+			}
 			chars[i] = rotor3[chars[i]-'A']
 			rotate(rotor3, 2)
 			// Map the Letter using the Reflector
-			fmt.Println("Reflector - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(reflector[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Reflector - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(reflector[chars[i]-'A']))
+			}
 			chars[i] = reflector[chars[i]-'A']
 			// Map the Letter using Rotor 3
-			fmt.Println("Rotor 3   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor3[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Rotor 3   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor3[chars[i]-'A']))
+			}
 			chars[i] = rotor3[chars[i]-'A']
 			rotate(rotor3, 2)
 			// Map the Letter using Rotor 2
-			fmt.Println("Rotor 2   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor2[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Rotor 2   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor2[chars[i]-'A']))
+			}
 			chars[i] = rotor2[chars[i]-'A']
 			rotate(rotor2, 2)
 			// Map the Letter using Rotor 1
-			fmt.Println("Rotor 1   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor1[chars[i]-'A']))
+			if verbose == "Y" {
+				fmt.Println("Rotor 1   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor1[chars[i]-'A']))
+			}
 			chars[i] = rotor1[chars[i]-'A']
 			rotate(rotor1, 2)
 		} else {
@@ -122,17 +176,16 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 	// Print the final Mapping
 	fmt.Println("-------------------------")
 	fmt.Println("Final Encryption:", string(chars))
-	fmt.Println("-------------------------")
 
-	for range str {
-		rotate(rotor1, 25)
-		rotate(rotor2, 25)
-		rotate(rotor3, 25)
-	}
+	// Revert the Rotors to the Original Position after Encrypting
+	rotate(rotor1, 27-r1+21)
+	rotate(rotor2, 27-r2+21)
+	rotate(rotor3, 27-r3+21)
 
 	return string(chars)
 }
 
+// Function to Rotate a Rotor by a specified Rotation
 func rotate(rotorMap []rune, rotation int) {
 	// Reduce Rotation value by 1 because position of 1 would not Rotate the Rotor at all
 	rotation = rotation - 1
@@ -148,6 +201,7 @@ func rotate(rotorMap []rune, rotation int) {
 	copy(rotorMap, rotated)
 }
 
+// Decryption Function
 func decrypt(str string, r1 int, r2 int, r3 int) string {
 	// Check if str length is greater than 0
 	if len(str) < 1 {
@@ -165,12 +219,10 @@ func decrypt(str string, r1 int, r2 int, r3 int) string {
 		fmt.Println("Error: Rotor 3 Position must be a Positive Integer between 1-26.")
 	}
 
-	rotate(rotor1, r1+(len(str)*2)+1)
-	//fmt.Println(string(rotor1))
-	rotate(rotor2, r2+(len(str)*2)+1)
-	//fmt.Println(string(rotor2))
-	rotate(rotor3, r3+(len(str)*2)+1)
-	//fmt.Println(string(rotor3))
+	// Rotate the Rotors 6 positions to account for the Encryption Positions
+	rotate(rotor1, r1+6)
+	rotate(rotor2, r2+6)
+	rotate(rotor3, r3+6)
 
 	// Remove the Newline Character '\n' and the Return Character '\r' at the end of the String
 	output := ""
@@ -191,81 +243,55 @@ func decrypt(str string, r1 int, r2 int, r3 int) string {
 
 	// Print the Original Mapping
 	fmt.Println("-------------------------")
-	fmt.Println("Before Decryption:", string(chars))
+	fmt.Println("String Before Decryption:", string(chars))
 
 	// Decrypt the String one Character at a time
 	for i := len(chars) - 1; i >= 0; i-- {
 		if chars[i] >= 65 && chars[i] <= 90 {
-			fmt.Println("-------------------------")
-			//fmt.Println("Rotor1 Current Position", string(rotor1))
+			if verbose == "Y" {
+				fmt.Println("-------------------------")
+			}
 			rotate(rotor1, 26)
-			//fmt.Println("Rotor1 New Position    ", string(rotor1))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex := IndexOf(rotor1, chars[i])
-			//fmt.Println(string(rotor1[rotorIndex]), "is letter", rotorIndex+1, "in Rotor1")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Rotor 1   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Rotor 1   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
-			//fmt.Println("Rotor2 Current Position", string(rotor2))
 			rotate(rotor2, 26)
-			//fmt.Println("Rotor2 New Position    ", string(rotor2))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex = IndexOf(rotor2, chars[i])
-			//fmt.Println(string(rotor2[rotorIndex]), "is letter", rotorIndex+1, "in Rotor2")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Rotor 2   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Rotor 2   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
-			//fmt.Println("Rotor3 Current Position", string(rotor3))
 			rotate(rotor3, 26)
-			//fmt.Println("Rotor3 New Position    ", string(rotor3))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex = IndexOf(rotor3, chars[i])
-			//fmt.Println(string(rotor3[rotorIndex]), "is letter", rotorIndex+1, "in Rotor3")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Rotor 3   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Rotor 3   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
-			//fmt.Println("Reflector Current Position", string(reflector))
-			//fmt.Println("Reflector New Position    ", string(reflector))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex = IndexOf(reflector, chars[i])
-			//fmt.Println(string(reflector[rotorIndex]), "is letter", rotorIndex+1, "in Reflector")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Reflector - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Reflector - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
-			//fmt.Println("Rotor3 Current Position", string(rotor3))
 			rotate(rotor3, 26)
-			//fmt.Println("Rotor3 New Position    ", string(rotor3))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex = IndexOf(rotor3, chars[i])
-			//fmt.Println(string(rotor3[rotorIndex]), "is letter", rotorIndex+1, "in Rotor3")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Rotor 3   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Rotor 3   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
-			//fmt.Println("Rotor2 Current Position", string(rotor2))
 			rotate(rotor2, 26)
-			//fmt.Println("Rotor2 New Position    ", string(rotor2))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex = IndexOf(rotor2, chars[i])
-			//fmt.Println(string(rotor2[rotorIndex]), "is letter", rotorIndex+1, "in Rotor2")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Rotor 2   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Rotor 2   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
-			//fmt.Println("Rotor1 Current Position", string(rotor1))
 			rotate(rotor1, 26)
-			//fmt.Println("Rotor1 New Position    ", string(rotor1))
-			//fmt.Println("Chars[i]:", chars[i], "=", string(chars[i]))
 			rotorIndex = IndexOf(rotor1, chars[i])
-			//fmt.Println(string(rotor1[rotorIndex]), "is letter", rotorIndex+1, "in Rotor1")
-			//fmt.Println("So that means", string(chars[i]), "was mapped to", string(alphabet[rotorIndex]))
-			fmt.Println("Rotor 1   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			if verbose == "Y" {
+				fmt.Println("Rotor 1   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
+			}
 			chars[i] = alphabet[rotorIndex]
-			//fmt.Println("-------------------------")
 		} else {
 			chars[i] = chars[i]
 		}
@@ -274,11 +300,11 @@ func decrypt(str string, r1 int, r2 int, r3 int) string {
 	// Print the final Mapping
 	fmt.Println("-------------------------")
 	fmt.Println("Final Decryption:", string(chars))
-	fmt.Println("-------------------------")
 
 	return string(chars)
 }
 
+// IndexOf Function to determine the index of a given Slice Element
 func IndexOf(haystack []rune, needle rune) int {
 	for i, v := range haystack {
 		if v == needle {

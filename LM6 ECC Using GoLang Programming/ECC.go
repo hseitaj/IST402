@@ -5,13 +5,11 @@ package main
 
 import (
 	"bufio"
-	"crypto/aes"
-	"crypto/cipher"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 )
@@ -27,7 +25,7 @@ func main() {
 	}
 
 	// Generate a public key
-	//publicKey := elliptic.Marshal(curve, x, y)
+	// publicKey := elliptic.Marshal(curve, x, y)
 
 	// Get user input
 	fmt.Print("Enter a string to encrypt: ")
@@ -43,39 +41,61 @@ func main() {
 	// Convert input to bytes
 	message := []byte(input)
 
-	// Generate a random nonce for AES-GCM encryption
-	nonce := make([]byte, 12)
-	if _, err := io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err)
-	}
-
-	// Generate shared secret between private and public keys
-	sharedSecretX, _ := curve.ScalarMult(x, y, privateKey)
-	sharedSecret := sharedSecretX.Bytes()
-
-	// Encrypt the message using AES-GCM
-	block, err := aes.NewCipher(sharedSecret)
+	// Generate a random number k
+	k, err := rand.Int(rand.Reader, curve.Params().N)
 	if err != nil {
 		panic(err)
 	}
 
-	aesGcm, err := cipher.NewGCMWithNonceSize(block, 12)
-	if err != nil {
-		panic(err)
+	// Calculate the ephemeral public key R = k * G
+	rx, ry := curve.ScalarBaseMult(k.Bytes())
+	R := elliptic.Marshal(curve, rx, ry)
+
+	// Calculate the shared secret S = (x,y) * k
+	Sx, Sy := curve.ScalarMult(x, y, k.Bytes())
+	S := elliptic.Marshal(curve, Sx, Sy)
+
+	// Calculate the hash of the shared secret as the symmetric key K
+	hash := Hash(S)
+	K := hash[:16] // Use the first 16 bytes as the key for simplicity
+
+	// Encrypt the message using XOR with the symmetric key K
+	ciphertext := make([]byte, len(message))
+	for i := range message {
+		ciphertext[i] = message[i] ^ K[i%len(K)]
 	}
 
-	ciphertext := aesGcm.Seal(nil, nonce, message, nil)
-
-	// Convert ciphertext to hexadecimal string
+	// Convert ciphertext and ephemeral public key to hexadecimal strings
 	hexCiphertext := hex.EncodeToString(ciphertext)
-	fmt.Printf("Encrypted message: %s\n", hexCiphertext)
+	hexR := hex.EncodeToString(R)
 
-	// Decrypt the ciphertext using AES-GCM
-	plaintext, err := aesGcm.Open(nil, nonce, ciphertext, nil)
-	if err != nil {
-		panic(err)
+	// Print the encrypted message and ephemeral public key
+	fmt.Printf("Encrypted message: %s\n", hexCiphertext)
+	fmt.Printf("Ephemeral public key: %s\n", hexR)
+
+	// Decode the ephemeral public key and calculate the shared secret
+	R, _ = hex.DecodeString(hexR)
+	rx, ry = elliptic.Unmarshal(curve, R)
+	Sx, Sy = curve.ScalarMult(rx, ry, privateKey)
+
+	// Calculate the hash of the shared secret as the symmetric key K
+	S = elliptic.Marshal(curve, Sx, Sy)
+	hash = Hash(S)
+	K = hash[:16] // Use the first 16 bytes as the key for simplicity
+
+	// Decrypt the ciphertext using XOR with the symmetric key K
+	ciphertext, _ = hex.DecodeString(hexCiphertext)
+	plaintext := make([]byte, len(ciphertext))
+	for i := range ciphertext {
+		plaintext[i] = ciphertext[i] ^ K[i%len(K)]
 	}
 
-	// Print decrypted plaintext
+	// Print the decrypted plaintext
 	fmt.Printf("Decrypted message: %s\n", plaintext)
+}
+
+// Hash calculates the SHA-256 hash of a byte slice
+func Hash(data []byte) []byte {
+	hash := sha256.Sum256(data)
+	return hash[:]
 }

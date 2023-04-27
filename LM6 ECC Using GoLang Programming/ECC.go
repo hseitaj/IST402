@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
 	"encoding/hex"
@@ -22,16 +21,15 @@ func main() {
 	curve := elliptic.P256()
 
 	// Generate a private key
-	privateKey, err := ecdsa.GenerateKey(curve, rand.Reader)
+	privateKey, x, y, err := elliptic.GenerateKey(curve, rand.Reader)
 	if err != nil {
 		panic(err)
 	}
 
 	// Generate a public key
-	publicKey := &privateKey.PublicKey
+	//publicKey := elliptic.Marshal(curve, x, y)
 
 	// Get user input
-	print("-------------------------\n")
 	fmt.Print("Enter a string to encrypt: ")
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
@@ -39,7 +37,6 @@ func main() {
 		panic(err)
 	}
 
-	print("-------------------------\n")
 	// Remove newline character from input
 	input = strings.TrimSuffix(input, "\n")
 
@@ -53,7 +50,7 @@ func main() {
 	}
 
 	// Generate shared secret between private and public keys
-	sharedSecretX, _ := curve.ScalarMult(publicKey.X, publicKey.Y, privateKey.D.Bytes())
+	sharedSecretX, _ := curve.ScalarMult(x, y, privateKey)
 	sharedSecret := sharedSecretX.Bytes()
 
 	// Encrypt the message using AES-GCM
@@ -72,13 +69,13 @@ func main() {
 	// Convert ciphertext to hexadecimal string
 	hexCiphertext := hex.EncodeToString(ciphertext)
 	fmt.Printf("Encrypted message: %s\n", hexCiphertext)
-	print("-------------------------\n")
+
 	// Decrypt the ciphertext using AES-GCM
 	plaintext, err := aesGcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		panic(err)
 	}
+
 	// Print decrypted plaintext
 	fmt.Printf("Decrypted message: %s\n", plaintext)
-	print("-------------------------\n")
 }

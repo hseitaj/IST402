@@ -1,5 +1,8 @@
 package main
 
+// IST 402 - Final Project
+// LM7 Personalized Enigma Machine
+
 import (
 	"bufio"
 	"fmt"

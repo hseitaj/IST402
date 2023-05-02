@@ -81,7 +81,7 @@ func main() {
 	// Calculate the hash of the shared secret as the symmetric key K
 	S = elliptic.Marshal(curve, Sx, Sy)
 	hash = Hash(S)
-	K = hash[:16] // Use the first 16 bytes as the key for simplicity
+	K = hash[:16] // First 16 bytes as the key for simplicity
 
 	// Decrypt the ciphertext using XOR with the symmetric key K
 	ciphertext, _ = hex.DecodeString(hexCiphertext)

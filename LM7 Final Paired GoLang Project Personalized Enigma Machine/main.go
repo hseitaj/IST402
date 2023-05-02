@@ -25,10 +25,11 @@ var verbose string
 func main() {
 
 	// Prompt the User for an Input
-	fmt.Println("*****************************************************************************************")
-	fmt.Println("\t\t\t\tEnigma Machine \n\tThis machine accepts only the English alphabet letters." +
-		"\n\tFor better output, please do not include any special letters or numbers.\n")
-	fmt.Println("*****************************************************************************************")
+	fmt.Println("******************************************************************************************")
+	fmt.Println("                                  IST 402 Enigma Machine                                  ")
+	fmt.Println("                This Enigma Machine only encrypts English Alphabet Letters                ")
+	fmt.Println("                Your String may contain Other Characters, but not numbers!                ")
+	fmt.Println("******************************************************************************************")
 	fmt.Println("Enter a String to Encrypt:")
 	inputReader := bufio.NewReader(os.Stdin)
 	input, _ := inputReader.ReadString('\n')
@@ -46,8 +47,6 @@ func main() {
 
 	// Print the Reflector position
 	//fmt.Println(string(reflector))
-
-	fmt.Println()
 
 	// Prompt the User for the 3 Encryption Keys
 	fmt.Println("-------------------------")
@@ -124,53 +123,59 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 		}
 	}
 
+	var greenOutput string
+	for _, c := range output {
+		greenOutput += fmt.Sprintf("\033[1m\033[32m%c\033[0m", c)
+	}
+
 	// Print the Original Mapping
 	fmt.Println("-------------------------")
-	fmt.Println("String Before Encryption:", string(chars))
+	fmt.Println("String Before Encryption:", string(greenOutput))
+	greenOutput = ""
 
 	// Encrypt the String one Character at a time
 	for i := 0; i < len(chars); i++ {
 		if chars[i] >= 65 && chars[i] <= 90 {
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("-------------------------")
 			}
 			// Map the Letter using Rotor 1
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 1   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor1[chars[i]-'A']))
 			}
 			chars[i] = rotor1[chars[i]-'A']
 			rotate(rotor1, 2)
 			// Map the Letter using Rotor 2
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 2   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor2[chars[i]-'A']))
 			}
 			chars[i] = rotor2[chars[i]-'A']
 			rotate(rotor2, 2)
 			// Map the Letter using Rotor 3
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 3   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor3[chars[i]-'A']))
 			}
 			chars[i] = rotor3[chars[i]-'A']
 			rotate(rotor3, 2)
 			// Map the Letter using the Reflector
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Reflector - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(reflector[chars[i]-'A']))
 			}
 			chars[i] = reflector[chars[i]-'A']
 			// Map the Letter using Rotor 3
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 3   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor3[chars[i]-'A']))
 			}
 			chars[i] = rotor3[chars[i]-'A']
 			rotate(rotor3, 2)
 			// Map the Letter using Rotor 2
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 2   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor2[chars[i]-'A']))
 			}
 			chars[i] = rotor2[chars[i]-'A']
 			rotate(rotor2, 2)
 			// Map the Letter using Rotor 1
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 1   - Remapping Letter:", i+1, "-", string(chars[i]), "->", string(rotor1[chars[i]-'A']))
 			}
 			chars[i] = rotor1[chars[i]-'A']
@@ -181,7 +186,6 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 	}
 
 	// Makes the output color green
-	var greenOutput string
 	output = string(chars)
 	for _, c := range output {
 		greenOutput += fmt.Sprintf("\033[1m\033[32m%c\033[0m", c)
@@ -255,54 +259,60 @@ func decrypt(str string, r1 int, r2 int, r3 int) string {
 		}
 	}
 
+	var greenOutput string
+	for _, c := range output {
+		greenOutput += fmt.Sprintf("\033[1m\033[32m%c\033[0m", c)
+	}
+
 	// Print the Original Mapping
 	fmt.Println("-------------------------")
-	fmt.Println("String Before Decryption:", string(chars))
+	fmt.Println("String Before Decryption:", greenOutput)
+	greenOutput = ""
 
 	// Decrypt the String one Character at a time
 	for i := len(chars) - 1; i >= 0; i-- {
 		if chars[i] >= 65 && chars[i] <= 90 {
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("-------------------------")
 			}
 			rotate(rotor1, 26)
 			rotorIndex := IndexOf(rotor1, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 1   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
 			rotate(rotor2, 26)
 			rotorIndex = IndexOf(rotor2, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 2   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
 			rotate(rotor3, 26)
 			rotorIndex = IndexOf(rotor3, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 3   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
 			rotorIndex = IndexOf(reflector, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Reflector - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
 			rotate(rotor3, 26)
 			rotorIndex = IndexOf(rotor3, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 3   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
 			rotate(rotor2, 26)
 			rotorIndex = IndexOf(rotor2, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 2   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
 			rotate(rotor1, 26)
 			rotorIndex = IndexOf(rotor1, chars[i])
-			if verbose == "Y" {
+			if verbose == "Y" || verbose == "y" {
 				fmt.Println("Rotor 1   - Demapping Letter:", i+1, "-", string(chars[i]), "->", string(alphabet[rotorIndex]))
 			}
 			chars[i] = alphabet[rotorIndex]
@@ -312,7 +322,6 @@ func decrypt(str string, r1 int, r2 int, r3 int) string {
 	}
 
 	// Makes the output color green
-	var greenOutput string
 	output = string(chars)
 	for _, c := range output {
 		greenOutput += fmt.Sprintf("\033[1m\033[32m%c\033[0m", c)

@@ -1,7 +1,6 @@
-package main
+// Link to Code Walk and Demo: https://psu.zoom.us/rec/share/5Z0UQ1CVIyFNlIf6ksy8wuGawgYfE1r-5gdrPwu5_-Tdi_lc8yuRsdEDU-wvp33S.Trg32qX3UgMv9SEV
 
-// IST 402 - Final Project
-// LM7 Personalized Enigma Machine
+package main
 
 import (
 	"bufio"
@@ -27,12 +26,14 @@ var verbose string
 // Main Function
 func main() {
 
-	// Prompt the User for an Input
+	// Talk a bit about the Program
 	fmt.Println("******************************************************************************************")
 	fmt.Println("                                  IST 402 Enigma Machine                                  ")
 	fmt.Println("                This Enigma Machine only encrypts English Alphabet Letters                ")
-	fmt.Println("                Your String may contain Other Characters, but not numbers!                ")
+	fmt.Println("             Your String may contain Letters and Punctuation, but no numbers!             ")
 	fmt.Println("******************************************************************************************")
+
+	// Prompt the User for an Input
 	fmt.Println("Enter a String to Encrypt:")
 	inputReader := bufio.NewReader(os.Stdin)
 	input, _ := inputReader.ReadString('\n')
@@ -80,7 +81,14 @@ func main() {
 
 	// Decrypt the String
 	decrypt(encryptedStr, decryptionKey1, decryptionKey2, decryptionKey3)
-	fmt.Println("-------------------------")
+
+	// Wrap Up the Program
+	fmt.Println("******************************************************************************************")
+	fmt.Println("                         Was your Input and your Output the same?                         ")
+	fmt.Println("                              If they were, Congratulations!                              ")
+	fmt.Println("   Otherwise, you likely used different Rotor Positions when Encrypting and Decrypting!   ")
+	fmt.Println("******************************************************************************************")
+
 }
 
 // Encryption Function
@@ -133,7 +141,7 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 
 	// Print the Original Mapping
 	fmt.Println("-------------------------")
-	fmt.Println("String Before Encryption:", string(greenOutput))
+	fmt.Println("String Before Encryption:", greenOutput)
 	greenOutput = ""
 
 	// Encrypt the String one Character at a time
@@ -199,9 +207,9 @@ func encrypt(str string, r1 int, r2 int, r3 int) string {
 	fmt.Println("Final Encryption:", greenOutput)
 
 	// Revert the Rotors to the Original Position after Encrypting
-	rotate(rotor1, 27-r1+21)
-	rotate(rotor2, 27-r2+21)
-	rotate(rotor3, 27-r3+21)
+	rotate(rotor1, 48-r1)
+	rotate(rotor2, 48-r2)
+	rotate(rotor3, 48-r3)
 
 	return string(chars)
 }
